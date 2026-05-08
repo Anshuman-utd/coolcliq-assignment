@@ -3,66 +3,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, MapPin, QrCode, AlertTriangle, 
-  BarChart3, Settings, LogOut, CheckCircle, Ban, Download
+  BarChart3, Settings, LogOut, CheckCircle, Ban, Download, ChevronLeft
 } from 'lucide-react';
-
-function AdminSidebar({ activeTab, setActiveTab }) {
-  const tabs = [
-    { id: 'dashboard', icon: BarChart3, label: 'Dashboard' },
-    { id: 'venues', icon: MapPin, label: 'Venues' },
-    { id: 'qr', icon: QrCode, label: 'QR Generator' },
-    { id: 'moderation', icon: AlertTriangle, label: 'Moderation' },
-    { id: 'users', icon: Users, label: 'Users' },
-    { id: 'analytics', icon: Settings, label: 'Analytics' },
-  ];
-
-  return (
-    <div className="w-64 bg-card border-r border-gray-800 flex flex-col h-screen shrink-0 hidden md:flex">
-      <div className="p-6 border-b border-gray-800">
-        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-          Aura Admin
-        </h1>
-        <p className="text-xs text-gray-500 mt-1">System Management</p>
-      </div>
-      <div className="flex-1 overflow-y-auto py-4">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-6 py-3 text-sm transition-colors ${
-                isActive 
-                  ? 'bg-primary/10 text-primary border-r-2 border-primary' 
-                  : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-200'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-      <div className="p-4 border-t border-gray-800">
-        <button 
-          onClick={() => window.location.href = '/login'}
-          className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
-      </div>
-    </div>
-  );
-}
+import Button from '../components/Button';
 
 function StatCard({ title, value, subtext }) {
   return (
-    <div className="bg-card p-6 rounded-2xl border border-gray-800 shadow-lg">
-      <h3 className="text-gray-400 text-sm font-medium mb-2">{title}</h3>
-      <div className="text-3xl font-bold text-white mb-1">{value}</div>
-      {subtext && <p className="text-xs text-gray-500">{subtext}</p>}
+    <div className="bg-card p-4 rounded-xl border border-gray-800 shadow-sm shrink-0">
+      <h3 className="text-gray-400 text-[10px] font-medium mb-1">{title}</h3>
+      <div className="text-xl font-bold text-white mb-0.5">{value}</div>
+      {subtext && <p className="text-[9px] text-gray-500">{subtext}</p>}
     </div>
   );
 }
@@ -81,7 +31,6 @@ export default function Admin() {
       setUsername('admin');
       setPassword('admin');
       setIsAuthenticated(true);
-      // clean up URL
       navigate('/admin', { replace: true });
     }
   }, [location, navigate]);
@@ -97,32 +46,37 @@ export default function Admin() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-card p-8 rounded-3xl border border-gray-800 shadow-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white">Aura Admin Panel</h1>
-            <p className="text-gray-400 text-sm mt-2">Sign in to continue</p>
+      <div className="flex items-center justify-center h-full bg-background p-4 relative">
+        <div className="absolute top-4 left-4">
+          <button onClick={() => navigate('/login')} className="p-2 bg-card rounded-full text-gray-400">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="w-full max-w-[280px] bg-card p-6 rounded-2xl border border-gray-800 shadow-lg">
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-bold text-white">Aura Admin</h1>
+            <p className="text-gray-400 text-xs mt-1">Sign in to continue</p>
           </div>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-3">
             <div>
-              <label className="text-xs font-semibold text-gray-400 uppercase">Username</label>
+              <label className="text-[10px] font-semibold text-gray-400 uppercase">Username</label>
               <input 
                 type="text" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full mt-1 bg-background border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50"
+                className="w-full mt-1 bg-background border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-400 uppercase">Password</label>
+              <label className="text-[10px] font-semibold text-gray-400 uppercase">Password</label>
               <input 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full mt-1 bg-background border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50"
+                className="w-full mt-1 bg-background border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
               />
             </div>
-            <button type="submit" className="w-full mt-6 bg-primary hover:bg-primary/90 text-white rounded-xl py-3 font-medium transition-colors">
+            <button type="submit" className="w-full mt-4 bg-primary text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               Login
             </button>
             <button 
@@ -132,7 +86,7 @@ export default function Admin() {
                 setPassword('admin');
                 setIsAuthenticated(true);
               }}
-              className="w-full mt-3 bg-card border border-gray-700 hover:bg-gray-800 text-gray-300 rounded-xl py-3 font-medium transition-colors"
+              className="w-full mt-2 bg-card border border-gray-700 hover:bg-gray-800 text-gray-300 rounded-lg py-2.5 text-sm font-medium transition-colors"
             >
               Demo Auto-Login
             </button>
@@ -142,60 +96,65 @@ export default function Admin() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background flex">
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      <div className="flex-1 overflow-y-auto p-8">
-        {/* Mobile Header (fallback) */}
-        <div className="md:hidden flex items-center justify-between mb-8">
-          <h1 className="text-xl font-bold text-white">Aura Admin</h1>
-          <select 
-            value={activeTab} 
-            onChange={(e) => setActiveTab(e.target.value)}
-            className="bg-card text-white border border-gray-800 rounded-lg px-3 py-1 text-sm"
-          >
-            <option value="dashboard">Dashboard</option>
-            <option value="venues">Venues</option>
-            <option value="qr">QR Generator</option>
-            <option value="moderation">Moderation</option>
-            <option value="users">Users</option>
-            <option value="analytics">Analytics</option>
-          </select>
-        </div>
+  const tabs = [
+    { id: 'dashboard', icon: BarChart3, label: 'Dash' },
+    { id: 'venues', icon: MapPin, label: 'Venues' },
+    { id: 'qr', icon: QrCode, label: 'QR' },
+    { id: 'moderation', icon: AlertTriangle, label: 'Mod' },
+    { id: 'users', icon: Users, label: 'Users' },
+  ];
 
+  return (
+    <div className="flex flex-col h-full bg-background overflow-hidden relative">
+      <div className="flex items-center justify-between p-4 border-b border-gray-800 shrink-0">
+        <div>
+          <h1 className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            Aura Admin
+          </h1>
+        </div>
+        <button 
+          onClick={() => setIsAuthenticated(false)}
+          className="text-xs text-red-400 flex items-center gap-1"
+        >
+          <LogOut className="w-3 h-3" />
+          Exit
+        </button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 pb-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.15 }}
+            className="h-full"
           >
             {activeTab === 'dashboard' && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-white mb-6">Platform Overview</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <StatCard title="Daily Active Users" value="1,248" subtext="+12% from yesterday" />
+              <div className="space-y-4">
+                <h2 className="text-sm font-bold text-white mb-2">Platform Overview</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  <StatCard title="Daily Users" value="1,248" subtext="+12% from yest" />
                   <StatCard title="Active Venues" value="34" subtext="4 added this week" />
-                  <StatCard title="Chat Initiation Rate" value="68%" subtext="Average per user session" />
-                  <StatCard title="Reveal Rate" value="42%" subtext="Users who reveal table info" />
+                  <StatCard title="Chat Rate" value="68%" subtext="Avg per session" />
+                  <StatCard title="Reveal Rate" value="42%" subtext="Users revealing info" />
                 </div>
                 
-                <div className="mt-8 bg-card border border-gray-800 rounded-2xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Active Users per Venue</h3>
-                  <div className="space-y-4">
+                <div className="mt-4 bg-card border border-gray-800 rounded-xl p-4">
+                  <h3 className="text-xs font-semibold text-white mb-3">Users per Venue</h3>
+                  <div className="space-y-3">
                     {[
-                      { name: 'The Obsidian Room', count: 120, max: 200 },
+                      { name: 'Obsidian Room', count: 120, max: 200 },
                       { name: 'Velvet Underground', count: 45, max: 100 },
                       { name: 'Blue Lounge', count: 86, max: 150 },
                     ].map(v => (
                       <div key={v.name}>
-                        <div className="flex justify-between text-sm mb-1">
+                        <div className="flex justify-between text-[10px] mb-1">
                           <span className="text-gray-300">{v.name}</span>
                           <span className="text-white font-medium">{v.count} / {v.max}</span>
                         </div>
-                        <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-primary" 
                             style={{ width: `${(v.count / v.max) * 100}%` }}
@@ -209,105 +168,81 @@ export default function Admin() {
             )}
 
             {activeTab === 'venues' && (
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Venue Management</h2>
-                  <button className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">
-                    + Add Venue
+              <div className="space-y-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-sm font-bold text-white">Venues</h2>
+                  <button className="bg-primary text-white px-2 py-1 rounded text-[10px] font-medium">
+                    + Add
                   </button>
                 </div>
-                <div className="bg-card border border-gray-800 rounded-2xl overflow-hidden">
-                  <table className="w-full text-left">
-                    <thead className="bg-[#1a1a24] text-xs uppercase text-gray-400">
-                      <tr>
-                        <th className="px-6 py-4 font-medium">Venue Name</th>
-                        <th className="px-6 py-4 font-medium">Type</th>
-                        <th className="px-6 py-4 font-medium">Geo-Radius</th>
-                        <th className="px-6 py-4 font-medium">Status</th>
-                        <th className="px-6 py-4 font-medium text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-800 text-sm text-gray-300">
-                      {[
-                        { name: 'Blue Lounge', type: 'Lounge', radius: '100m', status: 'Active' },
-                        { name: 'Syntax Error', type: 'Barcade', radius: '150m', status: 'Active' },
-                        { name: 'The Void', type: 'Club', radius: '200m', status: 'Inactive' },
-                      ].map(v => (
-                        <tr key={v.name} className="hover:bg-gray-800/30">
-                          <td className="px-6 py-4 text-white font-medium">{v.name}</td>
-                          <td className="px-6 py-4">{v.type}</td>
-                          <td className="px-6 py-4">{v.radius}</td>
-                          <td className="px-6 py-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${v.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                              {v.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right space-x-3">
-                            <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                            <button className="text-red-400 hover:text-red-300">Deactivate</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-3">
+                  {[
+                    { name: 'Blue Lounge', type: 'Lounge', status: 'Active' },
+                    { name: 'Syntax Error', type: 'Barcade', status: 'Active' },
+                    { name: 'The Void', type: 'Club', status: 'Inactive' },
+                  ].map(v => (
+                    <div key={v.name} className="bg-card p-3 rounded-xl border border-gray-800 flex justify-between items-center">
+                      <div>
+                        <h4 className="text-xs text-white font-medium">{v.name}</h4>
+                        <p className="text-[10px] text-gray-500">{v.type}</p>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] ${v.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                        {v.status}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
             {activeTab === 'qr' && (
-              <div className="max-w-2xl">
-                <h2 className="text-2xl font-bold text-white mb-6">QR Code Generator</h2>
-                <div className="bg-card border border-gray-800 rounded-2xl p-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-400 block mb-2">Select Venue</label>
-                      <select className="w-full bg-background border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none">
-                        <option>Blue Lounge</option>
-                        <option>Velvet Underground</option>
-                        <option>The Obsidian Room</option>
-                      </select>
+              <div className="space-y-4">
+                <h2 className="text-sm font-bold text-white mb-2">QR Code Generator</h2>
+                <div className="bg-card border border-gray-800 rounded-xl p-4">
+                  <label className="text-[10px] font-medium text-gray-400 block mb-1.5">Select Venue</label>
+                  <select className="w-full bg-background border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none mb-4">
+                    <option>Blue Lounge</option>
+                    <option>Velvet Underground</option>
+                  </select>
+                  
+                  <div className="flex justify-center py-4">
+                    <div className="w-32 h-32 bg-white rounded-xl p-2 flex items-center justify-center border-2 border-primary">
+                      <QrCode className="w-24 h-24 text-black" />
                     </div>
-                    
-                    <div className="flex justify-center py-8">
-                      <div className="w-48 h-48 bg-white rounded-xl p-2 flex items-center justify-center border-4 border-primary">
-                        <QrCode className="w-32 h-32 text-black" />
-                      </div>
-                    </div>
-
-                    <button className="w-full flex items-center justify-center gap-2 bg-secondary text-white py-3 rounded-xl font-medium hover:bg-secondary/90 transition-colors">
-                      <Download className="w-5 h-5" />
-                      Download PDF for Printing
-                    </button>
                   </div>
+
+                  <Button fullWidth className="text-xs py-2 gap-1.5 mt-2">
+                    <Download className="w-3.5 h-3.5" />
+                    Download PDF
+                  </Button>
                 </div>
               </div>
             )}
 
             {activeTab === 'moderation' && (
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-6">Moderation Queue</h2>
-                <div className="space-y-4">
+              <div className="space-y-4">
+                <h2 className="text-sm font-bold text-white mb-2">Moderation Queue</h2>
+                <div className="space-y-3">
                   {[
-                    { target: 'User456', reporter: 'Ghostly', reason: 'Inappropriate language', time: '10 mins ago' },
-                    { target: 'Anon_X', reporter: 'Shadow99', reason: 'Harassment', time: '1 hour ago' }
+                    { target: 'User456', reporter: 'Ghostly', reason: 'Inappropriate language', time: '10m' },
+                    { target: 'Anon_X', reporter: 'Shadow99', reason: 'Harassment', time: '1h' }
                   ].map((report, i) => (
-                    <div key={i} className="bg-card border border-gray-800 p-5 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="bg-red-500/20 text-red-500 text-xs px-2 py-0.5 rounded font-bold uppercase">Report</span>
-                          <span className="text-gray-400 text-xs">{report.time}</span>
-                        </div>
-                        <p className="text-white text-sm">
-                          <span className="font-bold text-primary">{report.reporter}</span> reported <span className="font-bold text-white">{report.target}</span>
-                        </p>
-                        <p className="text-gray-400 text-sm mt-1">Reason: {report.reason}</p>
+                    <div key={i} className="bg-card border border-gray-800 p-3 rounded-xl">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="bg-red-500/20 text-red-500 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Report</span>
+                        <span className="text-gray-500 text-[9px]">{report.time}</span>
                       </div>
+                      <p className="text-white text-[11px] leading-tight mb-1">
+                        <span className="font-bold text-primary">{report.reporter}</span> reported <span className="font-bold">{report.target}</span>
+                      </p>
+                      <p className="text-gray-400 text-[10px] mb-3">Reason: {report.reason}</p>
+                      
                       <div className="flex gap-2">
-                        <button className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-sm transition-colors">
-                          <CheckCircle className="w-4 h-4 text-green-400" /> Ignore
+                        <button className="flex-1 flex items-center justify-center gap-1 bg-gray-800 text-white py-1.5 rounded text-[10px]">
+                          <CheckCircle className="w-3 h-3 text-green-400" /> Ignore
                         </button>
-                        <button className="flex items-center gap-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg text-sm transition-colors">
-                          <Ban className="w-4 h-4" /> Ban User
+                        <button className="flex-1 flex items-center justify-center gap-1 bg-red-500/10 text-red-500 border border-red-500/20 py-1.5 rounded text-[10px]">
+                          <Ban className="w-3 h-3" /> Ban
                         </button>
                       </div>
                     </div>
@@ -317,79 +252,61 @@ export default function Admin() {
             )}
 
             {activeTab === 'users' && (
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-6">User Management</h2>
-                <div className="bg-card border border-gray-800 rounded-2xl overflow-hidden">
-                  <table className="w-full text-left">
-                    <thead className="bg-[#1a1a24] text-xs uppercase text-gray-400">
-                      <tr>
-                        <th className="px-6 py-4 font-medium">Handle</th>
-                        <th className="px-6 py-4 font-medium">Joined</th>
-                        <th className="px-6 py-4 font-medium">Status</th>
-                        <th className="px-6 py-4 font-medium text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-800 text-sm text-gray-300">
-                      {[
-                        { handle: '@shadow_walker', joined: 'Oct 12, 2023', status: 'Active' },
-                        { handle: '@neon_rider', joined: 'Nov 04, 2023', status: 'Active' },
-                        { handle: '@bad_actor', joined: 'Jan 15, 2024', status: 'Banned' },
-                      ].map(u => (
-                        <tr key={u.handle} className="hover:bg-gray-800/30">
-                          <td className="px-6 py-4 text-white font-medium">{u.handle}</td>
-                          <td className="px-6 py-4">{u.joined}</td>
-                          <td className="px-6 py-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${u.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                              {u.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right space-x-3">
-                            {u.status === 'Active' ? (
-                              <>
-                                <button className="text-yellow-400 hover:text-yellow-300">Suspend</button>
-                                <button className="text-red-400 hover:text-red-300">Ban</button>
-                              </>
-                            ) : (
-                              <button className="text-green-400 hover:text-green-300">Restore</button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'analytics' && (
-              <div className="max-w-xl">
-                <h2 className="text-2xl font-bold text-white mb-6">Data & Analytics</h2>
-                <div className="bg-card border border-gray-800 rounded-2xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-2">Export Platform Data</h3>
-                  <p className="text-sm text-gray-400 mb-6">
-                    Download a comprehensive CSV report of platform metrics, user engagement, and venue statistics.
-                  </p>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-400 block mb-2">Date Range</label>
-                      <select className="w-full bg-background border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none mb-4">
-                        <option>Last 7 Days</option>
-                        <option>Last 30 Days</option>
-                        <option>All Time</option>
-                      </select>
+              <div className="space-y-4">
+                <h2 className="text-sm font-bold text-white mb-2">User Management</h2>
+                <div className="space-y-3">
+                  {[
+                    { handle: '@shadow_walker', status: 'Active' },
+                    { handle: '@neon_rider', status: 'Active' },
+                    { handle: '@bad_actor', status: 'Banned' },
+                  ].map(u => (
+                    <div key={u.handle} className="bg-card p-3 rounded-xl border border-gray-800 flex justify-between items-center">
+                      <h4 className="text-xs text-white font-medium">{u.handle}</h4>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] ${u.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                          {u.status}
+                        </span>
+                        {u.status === 'Active' ? (
+                          <button className="text-red-400 p-1 bg-gray-800 rounded"><Ban className="w-3 h-3"/></button>
+                        ) : (
+                          <button className="text-green-400 p-1 bg-gray-800 rounded"><CheckCircle className="w-3 h-3"/></button>
+                        )}
+                      </div>
                     </div>
-                    
-                    <button className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors">
-                      <Download className="w-5 h-5" />
-                      Export CSV
-                    </button>
-                  </div>
+                  ))}
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-gray-800">
+                   <Button fullWidth variant="outline" className="text-xs py-2 gap-1.5">
+                      <Download className="w-3 h-3" /> Export Analytics CSV
+                   </Button>
                 </div>
               </div>
             )}
           </motion.div>
         </AnimatePresence>
+      </div>
+
+      {/* Admin Bottom Nav */}
+      <div className="absolute bottom-0 left-0 right-0 w-full bg-[#12121A] border-t border-gray-800 z-30 shrink-0 pb-safe">
+        <div className="flex justify-around items-center h-14 px-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-center justify-center w-12 h-full gap-0.5 transition-colors ${
+                  isActive ? "text-primary" : "text-gray-500 hover:text-gray-400"
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : ''}`} />
+                <span className="text-[8px] font-medium">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
