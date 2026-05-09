@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum UserStatus {
+  active
+  suspended
+  banned
+  deleted
+}
+
+enum VenueStatus {
+  active
+  inactive
+}
+
+enum PresenceStatus {
+  active
+  expired
+  left
+}
+
+enum ChatStatus {
+  active
+  closed
+}
+
+enum RevealStatus {
+  pending
+  accepted
+  declined
+}
+
+enum ReportType {
+  user
+  chat
+  message
+}
+
+enum ReportStatus {
+  pending
+  reviewed
+  resolved
+}
+
+enum AdminRole {
+  super_admin
+  moderator
+}
+
+model User {
+  id            String   @id @default(uuid())
+  phone         String   @unique
+  handle        String   @unique
+  age           Int
+  gender        Gender
+  profilePhoto  String?
+  status        UserStatus @default(active)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  presences     UserPresence[]
+  sentMessages  Message[]
+  reports       Report[]
+}
+
+model Venue {
+  id            String   @id @default(uuid())
+
+  name          String
+  address       String
+
+  latitude      Float
+  longitude     Float
+
+  geoRadius     Int      @default(100)
+
+  qrToken       String   @unique
+
+  status        VenueStatus @default(active)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  presences     UserPresence[]
+  chats         Chat[]
+}
+
+model UserPresence {
+  id            String   @id @default(uuid())
+
+  userId        String
+  venueId       String
+
+  status        PresenceStatus @default(active)
+
+  checkedInAt   DateTime @default(now())
+
+  expiresAt     DateTime
+
+  checkedOutAt  DateTime?
+
+  user          User     @relation(fields: [userId], references: [id])
+  venue         Venue    @relation(fields: [venueId], references: [id])
+}
+
+model Chat {
+  id            String   @id @default(uuid())
+
+  userOneId     String
+  userTwoId     String
+
+  venueId       String?
+
+  status        ChatStatus @default(active)
+
+  createdAt     DateTime @default(now())
+
+  venue         Venue?   @relation(fields: [venueId], references: [id])
+
+  messages      Message[]
+  reveals       RevealRequest[]
+}
+
+model Message {
+  id            String   @id @default(uuid())
+
+  chatId        String
+  senderId      String
+
+  message       String
+
+  createdAt     DateTime @default(now())
+
+  chat          Chat     @relation(fields: [chatId], references: [id])
+
+  sender        User     @relation(fields: [senderId], references: [id])
+}
+
+model RevealRequest {
+  id            String   @id @default(uuid())
+
+  chatId        String
+
+  requestedBy   String
+
+  status        RevealStatus @default(pending)
+
+  tableNumber   String?
+
+  createdAt     DateTime @default(now())
+
+  chat          Chat     @relation(fields: [chatId], references: [id])
+}
+
+model BlockedUser {
+  id            String   @id @default(uuid())
+
+  blockerId     String
+  blockedId     String
+
+  createdAt     DateTime @default(now())
+}
+
+model Report {
+  id              String   @id @default(uuid())
+
+  reporterId      String
+
+  reportedUserId  String?
+
+  chatId          String?
+
+  messageId       String?
+
+  type            ReportType
+
+  reason          String
+
+  status          ReportStatus @default(pending)
+
+  createdAt       DateTime @default(now())
+
+  reporter        User @relation(fields: [reporterId], references: [id])
+}
+
+model Admin {
+  id            String   @id @default(uuid())
+
+  name          String
+
+  email         String   @unique
+
+  passwordHash  String
+
+  role          AdminRole @default(moderator)
+
+  createdAt     DateTime @default(now())
+}
+
+model ModerationLog {
+  id            String   @id @default(uuid())
+
+  adminId       String
+
+  reportId      String
+
+  actionTaken   String
+
+  createdAt     DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id            String   @id @default(uuid())
+
+  userId        String?
+
+  venueId       String?
+
+  eventName     String
+
+  metadata      Json?
+
+  createdAt     DateTime @default(now())
+}
